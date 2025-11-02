@@ -1,12 +1,11 @@
 package org.example.conferenceservice.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter @ToString @Builder
@@ -19,4 +18,7 @@ public class Conference {
     private Date date;
     private String duree; // min or hours
     private int score;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
 }

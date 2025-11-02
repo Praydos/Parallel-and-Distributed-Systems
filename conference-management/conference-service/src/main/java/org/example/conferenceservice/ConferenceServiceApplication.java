@@ -1,7 +1,9 @@
 package org.example.conferenceservice;
 
 import org.example.conferenceservice.entities.Conference;
+import org.example.conferenceservice.entities.Review;
 import org.example.conferenceservice.repositories.ConferenceRepository;
+import org.example.conferenceservice.repositories.ReviewRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,17 +20,71 @@ public class ConferenceServiceApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(ConferenceRepository cr) {
+    CommandLineRunner commandLineRunner(ConferenceRepository cr, ReviewRepository rr) {
         return args -> {
-            cr.save(new Conference(null,"title","type1",new Date(),"2h",3));
-            cr.save(new Conference(null,"title","type2",new Date(),"1h",4));
-            cr.save(new Conference(null,"title","type3",new Date(),"30min",5));
+            Conference conference1 = Conference.builder()
+                    .titre("Spring Boot Conference")
+                    .type("Académique")
+                    .date(new Date())
+                    .duree("2h")
+                    .score(4)
+                    .build();
 
-            List<Conference> conferences = cr.findAll();
-            for(Conference conference : conferences) {
-                System.out.println("=====================");
-                System.out.println(conference.toString());
-            }
+            Review review1 = Review.builder()
+                    .date(new Date())
+                    .text("Excellent conference with great insights about Spring Boot!")
+                    .note(5)
+                    .conference(conference1)
+                    .build();
+
+            conference1.setReviews(List.of(review1));
+            //rr.save(review1);
+            cr.save(conference1);
+
+            // Create Conference 2 with Review
+            Conference conference2 = Conference.builder()
+                    .titre("Microservices Architecture")
+                    .type("Commerciale")
+                    .date(new Date(System.currentTimeMillis() + 86400000)) // Tomorrow
+                    .duree("1h30")
+                    .score(5)
+                    .build();
+
+            Review review2 = Review.builder()
+                    .date(new Date())
+                    .text("Very informative session about microservices patterns.")
+                    .note(4)
+                    .conference(conference2)
+                    .build();
+
+            conference1.setReviews(List.of(review1,review2));
+
+            //rr.save(review2);
+            cr.save(conference2);
+
+            // Create Conference 3 with Review
+            Conference conference3 = Conference.builder()
+                    .titre("Cloud Native Applications")
+                    .type("Académique")
+                    .date(new Date(System.currentTimeMillis() + 172800000)) // Day after tomorrow
+                    .duree("3h")
+                    .score(4)
+                    .build();
+
+            Review review3 = Review.builder()
+                    .date(new Date())
+                    .text("Comprehensive coverage of cloud technologies and best practices.")
+                    .note(5)
+                    .conference(conference3)
+                    .build();
+
+            conference1.setReviews(List.of(review1,review3));
+
+            //rr.save(review3);
+            cr.save(conference3);
+
+
+
         };
 
 
