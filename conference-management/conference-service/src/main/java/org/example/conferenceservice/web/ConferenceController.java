@@ -52,6 +52,26 @@ public class ConferenceController {
         return conference;
     }
 
+    @GetMapping("/all-with-details")
+    public List<Conference> getAllConferencesWithDetails() {
+        List<Conference> conferences = conferenceRepository.findAllWithReviews();
+
+        // Populate keynotes for each conference
+        conferences.forEach(conference -> {
+            if (conference.getKeynoteId() != null) {
+                try {
+                    Keynote keynote = keynoteRestClient.getKeynoteById(conference.getKeynoteId());
+                    conference.setKeynote(keynote);
+                } catch (Exception e) {
+                    System.err.println("Error fetching keynote for conference " + conference.getId() + ": " + e.getMessage());
+                    // Handle error - you could set a default or leave null
+                }
+            }
+        });
+
+        return conferences;
+    }
+
 
 
 }
