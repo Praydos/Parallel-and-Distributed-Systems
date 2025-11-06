@@ -57,7 +57,7 @@ public class ConferenceServiceApplication {
                     .conference(conference2)
                     .build();
 
-            conference1.setReviews(List.of(review1,review2));
+            conference2.setReviews(List.of(review2));
 
             //rr.save(review2);
             cr.save(conference2);
@@ -77,8 +77,14 @@ public class ConferenceServiceApplication {
                     .note(5)
                     .conference(conference3)
                     .build();
+            Review review3_2 = Review.builder()  // Second review for conference3
+                    .date(new Date())
+                    .text("Amazing insights into cloud native development!")
+                    .note(5)
+                    .conference(conference3)
+                    .build();
 
-            conference1.setReviews(List.of(review1,review3));
+            conference3.setReviews(List.of(review3, review3_2));
 
             //rr.save(review3);
             cr.save(conference3);

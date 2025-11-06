@@ -1,5 +1,6 @@
 package org.example.conferenceservice.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,5 +21,6 @@ public class Review {
 
     @ManyToOne
     @JsonProperty(access =  JsonProperty.Access.WRITE_ONLY)
+    @JsonBackReference // Add this
     private Conference conference;
 }

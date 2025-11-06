@@ -1,5 +1,6 @@
 package org.example.conferenceservice.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class Conference {
     private String duree; // min or hours
     private int score;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "conference")
+    @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 }
