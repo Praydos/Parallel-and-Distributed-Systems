@@ -3,6 +3,7 @@ package org.example.conferenceservice.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.conferenceservice.model.Keynote;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,4 +24,7 @@ public class Conference {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "conference")
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
+
+    private Long keynoteId; // Single keynote ID from keynote-service
+    @Transient private Keynote keynote;
 }

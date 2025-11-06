@@ -2,17 +2,24 @@ package org.example.conferenceservice;
 
 import org.example.conferenceservice.entities.Conference;
 import org.example.conferenceservice.entities.Review;
+import org.example.conferenceservice.feign.HalResponse;
+import org.example.conferenceservice.feign.KeynoteRestClient;
+import org.example.conferenceservice.model.Keynote;
 import org.example.conferenceservice.repositories.ConferenceRepository;
 import org.example.conferenceservice.repositories.ReviewRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.PagedModel;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
+@EnableFeignClients
 public class ConferenceServiceApplication {
 
     public static void main(String[] args) {
@@ -20,12 +27,23 @@ public class ConferenceServiceApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(ConferenceRepository cr, ReviewRepository rr) {
+    CommandLineRunner commandLineRunner(ConferenceRepository cr,
+                                        ReviewRepository rr,
+                                        KeynoteRestClient keynoteRestClient ) {
         return args -> {
+            HalResponse halResponse = keynoteRestClient.getAllKeynotes();
+            List<Keynote> availableKeynotes = halResponse.getEmbedded() != null ?
+                    halResponse.getEmbedded().getKeynotes() : Collections.emptyList();
+
+            if (availableKeynotes.isEmpty()) {
+                System.out.println("No keynotes available in keynote-service");
+                return;
+            }
             Conference conference1 = Conference.builder()
                     .titre("Spring Boot Conference")
                     .type("Académique")
                     .date(new Date())
+                    .keynoteId(availableKeynotes.getFirst().getId())
                     .duree("2h")
                     .score(4)
                     .build();
@@ -47,6 +65,7 @@ public class ConferenceServiceApplication {
                     .type("Commerciale")
                     .date(new Date(System.currentTimeMillis() + 86400000)) // Tomorrow
                     .duree("1h30")
+                    .keynoteId(availableKeynotes.get(1).getId())
                     .score(5)
                     .build();
 
@@ -68,6 +87,7 @@ public class ConferenceServiceApplication {
                     .type("Académique")
                     .date(new Date(System.currentTimeMillis() + 172800000)) // Day after tomorrow
                     .duree("3h")
+                    .keynoteId(availableKeynotes.get(2).getId())
                     .score(4)
                     .build();
 
