@@ -11,5 +11,20 @@ public class RestRepositoryConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         config.exposeIdsFor(Keynote.class);
+
+        // Configuration CORS COMPLÈTE
+        cors.addMapping("/**")
+                .allowedOrigins(
+                        "http://localhost:8000",
+                        "http://127.0.0.1:8000",
+                        "http://localhost:5500",
+                        "http://127.0.0.1:5500"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
+
+
 }

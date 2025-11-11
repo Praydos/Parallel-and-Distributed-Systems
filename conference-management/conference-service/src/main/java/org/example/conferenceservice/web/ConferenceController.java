@@ -28,15 +28,7 @@ public class ConferenceController {
         return conferenceRepository.findAllWithReviews();
     }
 
-//    @GetMapping("/bills/{id}")
-//    public Bill getBill(@PathVariable Long id) {
-//        Bill bill = billRepository.findById(id).get();
-//        bill.setCustomer(customerRestClient.getCustomerById(bill.getCustomerId()));
-//        bill.getItems().forEach(item -> {
-//            item.setProduct(productRestClient.getProductById(item.getProductId()));
-//        });
-//        return bill;
-//    }
+
 
     @GetMapping("/{id}")
     public Conference getConferenceById(@PathVariable Long id) {
