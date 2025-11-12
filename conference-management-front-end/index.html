@@ -29,9 +29,119 @@
         <!-- Section Conférences -->
         <div id="conferences-section">
             <header class="mb-4">
-                <h1 class="text-center">🎤 Gestion des Conférences</h1>
-                <p class="text-center text-muted">Découvrez toutes les conférences, leurs keynotes et avis</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1><i class="bi bi-camera-video"></i> Gestion des Conférences</h1>
+                        <p class="text-muted mb-0">Découvrez toutes les conférences, leurs keynotes et avis</p>
+                    </div>
+                    <button class="btn btn-success" onclick="showConferenceForm()">
+                        <i class="bi bi-plus-circle"></i> Nouvelle Conférence
+                    </button>
+                </div>
             </header>
+
+            <!-- Formulaire Conférence -->
+            <div id="conference-form-container" class="card mb-4 d-none">
+                <div class="card-header">
+                    <h5 id="conference-form-title">Ajouter une Conférence</h5>
+                </div>
+                <div class="card-body">
+                    <form id="conference-form" onsubmit="saveConference(event)">
+                        <input type="hidden" id="conference-id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-titre" class="form-label">Titre *</label>
+                                    <input type="text" class="form-control" id="conference-titre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-type" class="form-label">Type *</label>
+                                    <select class="form-select" id="conference-type" required>
+                                        <option value="">Sélectionnez un type</option>
+                                        <option value="Académique">Académique</option>
+                                        <option value="Commerciale">Commerciale</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-date" class="form-label">Date *</label>
+                                    <input type="datetime-local" class="form-control" id="conference-date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-duree" class="form-label">Durée *</label>
+                                    <input type="text" class="form-control" id="conference-duree" placeholder="ex: 2h, 1h30" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-score" class="form-label">Score (0-5) *</label>
+                                    <input type="number" class="form-control" id="conference-score" min="0" max="5" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="conference-keynote" class="form-label">Keynote Speaker</label>
+                                    <select class="form-select" id="conference-keynote">
+                                        <option value="">Aucun keynote</option>
+                                        <!-- Les options seront peuplées dynamiquement -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Enregistrer
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="hideConferenceForm()">
+                                <i class="bi bi-x-circle"></i> Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Section Reviews (pour l'édition) -->
+            <div id="reviews-section" class="card mb-4 d-none">
+                <div class="card-header">
+                    <h5>Gestion des Avis</h5>
+                </div>
+                <div class="card-body">
+                    <form id="review-form" onsubmit="addReview(event)">
+                        <input type="hidden" id="review-conference-id">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="review-text" class="form-label">Commentaire</label>
+                                    <textarea class="form-control" id="review-text" rows="2" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="review-note" class="form-label">Note (0-5)</label>
+                                    <input type="number" class="form-control" id="review-note" min="0" max="5" required>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-plus"></i> Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="reviews-list" class="mt-3">
+                        <!-- Liste des reviews sera peuplée dynamiquement -->
+                    </div>
+                </div>
+            </div>
 
             <div id="loading" class="text-center">
                 <div class="spinner-border text-primary" role="status">
@@ -118,8 +228,27 @@
         </div>
     </div>
 
-    <!-- Modal de confirmation de suppression -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
+    <!-- Modal de confirmation de suppression Conférence -->
+    <div class="modal fade" id="deleteConferenceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation de suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cette conférence ? Tous les avis associés seront également supprimés.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-conference">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression Keynote -->
+    <div class="modal fade" id="deleteKeynoteModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -131,7 +260,26 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-danger" id="confirm-delete">Supprimer</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-keynote">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression Review -->
+    <div class="modal fade" id="deleteReviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation de suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cet avis ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-review">Supprimer</button>
                 </div>
             </div>
         </div>
